@@ -1,3 +1,4 @@
+import pandas as pd
 def dfs(graph,frees, vertex, seq):
     # graph: danh sách kề của đồ thị
     # frees   : trạng thái tự do (= 1) hay không (= 0) của các đỉnh (series)
