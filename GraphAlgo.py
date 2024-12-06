@@ -1,10 +1,6 @@
 import pandas as pd
 import numpy as np
 def dfs(graph,frees, vertex, seq):
-    # graph: danh sách kề của đồ thị
-    # frees   : trạng thái tự do (= 1) hay không (= 0) của các đỉnh (series)
-    # vertex  : đỉnh đang xét duyệt (label: string)
-    # seq     : chuỗi thứ tự các đỉnh đã duyệt
     seq.append(vertex)
     frees[vertex] = 0
     if vertex in graph:
@@ -23,12 +19,13 @@ def dfs_all_components(graph):
             components.append(seq)
     return components
 
-def prim(graph, start_vertex):
+def prim(graph: pd.DataFrame, start_vertex: int):
     n = len(graph)
     selected = [False] * n
     selected[start_vertex] = True
     mst_edges = []
     total_weight = 0
+    index_list = list(graph.index)
 
     for _ in range(n - 1):
         min_weight = np.inf
@@ -43,7 +40,7 @@ def prim(graph, start_vertex):
 
         if u != -1 and v != -1:
             selected[v] = True
-            mst_edges.append((u, v))
+            mst_edges.append((index_list[u], index_list[v]))
             total_weight += min_weight
 
     return mst_edges, total_weight
@@ -63,7 +60,7 @@ def union(parent, rank, x, y):
         parent[root_y] = root_x
         rank[root_x] += 1
 
-def kruskal(graph):
+def kruskal(graph: pd.DataFrame):
     """
     graph: DataFrame hoặc danh sách cạnh (edge list)
     """
@@ -90,7 +87,7 @@ def kruskal(graph):
 
     return mst_edges, total_weight
 
-def graph_coloring(graph):
+def graph_coloring(graph: pd.DataFrame):
     n = graph.shape[0]
     colors = [-1] * n
     available = [True] * n
