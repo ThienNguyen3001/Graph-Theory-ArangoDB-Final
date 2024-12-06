@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 def dfs(graph,frees, vertex, seq):
     # graph: danh sách kề của đồ thị
     # frees   : trạng thái tự do (= 1) hay không (= 0) của các đỉnh (series)
@@ -23,7 +24,7 @@ def dfs_all_components(graph):
     return components
 
 def prim(graph, start_vertex):
-    n = graph.shape[0]
+    n = len(graph)
     selected = [False] * n
     selected[start_vertex] = True
     mst_edges = []
@@ -94,7 +95,7 @@ def graph_coloring(graph):
     colors = [-1] * n
     available = [True] * n
 
-    colors[0] = 0  # tô màu đầu tiên
+    colors[0] = 0  
 
     for u in range(1, n):
         for v in range(n):
