@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import heapq
 def dfs(graph,frees, vertex, seq):
     seq.append(vertex)
     frees[vertex] = 0
@@ -19,7 +20,6 @@ def dfs_all_components(graph):
             components.append(seq)
     return components
 
-import heapq
 
 def prim(graph, start_vertex):
     mst_edges = []
