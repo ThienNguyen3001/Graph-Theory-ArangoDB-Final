@@ -19,31 +19,31 @@ def dfs_all_components(graph):
             components.append(seq)
     return components
 
-def prim(graph: pd.DataFrame, start_vertex: int):
-    n = len(graph)
-    selected = [False] * n
-    selected[start_vertex] = True
+import heapq
+
+def prim(graph, start_vertex):
     mst_edges = []
     total_weight = 0
-    index_list = list(graph.index)
+    visited = set()
+    min_heap = [(0, start_vertex, None)]  # (weight, current_vertex, parent_vertex)
 
-    for _ in range(n - 1):
-        min_weight = np.inf
-        u, v = -1, -1
+    while min_heap:
+        weight, current_vertex, parent_vertex = heapq.heappop(min_heap)
 
-        for i in range(n):
-            if selected[i]:
-                for j in range(n):
-                    if not selected[j] and graph.iloc[i, j] < min_weight:
-                        min_weight = graph.iloc[i, j]
-                        u, v = i, j
+        if current_vertex in visited:
+            continue
 
-        if u != -1 and v != -1:
-            selected[v] = True
-            mst_edges.append((index_list[u], index_list[v]))
-            total_weight += min_weight
+        visited.add(current_vertex)
+        if parent_vertex is not None:
+            mst_edges.append((parent_vertex, current_vertex, weight))
+            total_weight += weight
+
+        for neighbor, edge_weight in graph[current_vertex]:
+            if neighbor not in visited:
+                heapq.heappush(min_heap, (edge_weight, neighbor, current_vertex))
 
     return mst_edges, total_weight
+
 def find(parent, i):
     if parent[i] == i:
         return i
