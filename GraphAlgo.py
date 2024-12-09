@@ -131,19 +131,15 @@ def union(parent, rank, x, y):
         parent[root_y] = root_x
         rank[root_x] += 1
 
-def kruskal(graph: pd.DataFrame):
-    """
-    graph: DataFrame hoặc danh sách cạnh (edge list)
-    """
+def kruskal(graph):
     edges = []
-    for i in range(graph.shape[0]):
-        for j in range(i + 1, graph.shape[1]):
-            if graph.iloc[i, j] != np.inf and graph.iloc[i, j] != 0:
-                edges.append((i, j, graph.iloc[i, j]))
+    for u in graph:
+        for v, weight in graph[u]:
+            edges.append((u, v, weight))
 
     edges = sorted(edges, key=lambda x: x[2])
-    parent = [i for i in range(graph.shape[0])]
-    rank = [0] * graph.shape[0]
+    parent = {v: v for v in graph}
+    rank = {v: 0 for v in graph}
 
     mst_edges = []
     total_weight = 0
@@ -152,29 +148,28 @@ def kruskal(graph: pd.DataFrame):
         root_u = find(parent, u)
         root_v = find(parent, v)
         if root_u != root_v:
-            mst_edges.append((u, v))
+            mst_edges.append((u, v, weight))
             total_weight += weight
             union(parent, rank, root_u, root_v)
 
     return mst_edges, total_weight
 
-def graph_coloring(graph: pd.DataFrame):
-    n = graph.shape[0]
-    colors = [-1] * n
-    available = [True] * n
-
-    colors[0] = 0  
-
-    for u in range(1, n):
-        for v in range(n):
-            if graph.iloc[u, v] == 1 and colors[v] != -1:
-                available[colors[v]] = False
-
+def graph_coloring(graph, colors):
+    n = len(graph)  
+    
+    for vertex in range(1, n):
+        # Track available colors
+        available = [True] * n
+        
+        
+        for neighbor in graph[vertex]:
+            if colors[neighbor] != -1:
+                available[colors[neighbor]] = False
+        
+        # Find first available color
         for color in range(n):
             if available[color]:
-                colors[u] = color
+                colors[vertex] = color
                 break
-
-        available = [True] * n
-
+                
     return colors

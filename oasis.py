@@ -27,14 +27,14 @@ def getTempCredentials(tutorialName=None,credentialProvider="https://tutorials.a
             if (login is not None):
                 try: 
                     conn = Connection(arangoURL=url, username=login["username"], password=login["password"],)
-                    print("Reusing cached credentials.")
+                    print("Sử dụng lại thông tin đăng nhập được lưu trong bộ nhớ đệm.")
                     return login
                 except:
-                    print("Credentials expired.")
+                    print("Thông tin xác thực đã hết hạn.")
                     pass # Ignore and retrieve new 
     
         # Retrieve new credentials from Foxx Service
-        print("Requesting new temp credentials.")
+        print("Yêu cầu thông tin xác thực tạm thời mới.")
         if (tutorialName is not None):
              body = {
             "tutorialName": tutorialName
@@ -46,12 +46,12 @@ def getTempCredentials(tutorialName=None,credentialProvider="https://tutorials.a
         x = requests.post(url, data = json.dumps(body))
 
         if x.status_code != 200:
-            print("Error retrieving login data.")
+            print("Lỗi truy xuất dữ liệu đăng nhập.")
             sys.exit()
         # Caching credentials
         cacheFile.truncate(0) 
         cacheFile.write(x.text)
-        print("Temp database ready to use.")
+        print("Cơ sở dữ liệu tạm thời đã sẵn sàng để sử dụng.")
         return json.loads(x.text)
 
 # Connect against an oasis DB and return pyarango connection
