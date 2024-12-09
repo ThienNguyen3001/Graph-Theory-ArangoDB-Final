@@ -39,12 +39,15 @@ def find_euler_cycle(graph):
             stack.append(neighbor)
     return cycle[::-1]
 
-def has_hamilton_cycle(graph):
-    vertices, n = list(graph.keys()), len(graph)
+def has_hamilton_cycle(adjacency_list):
+    vertices, n = list(adjacency_list.keys()), len(adjacency_list)
+    
     def is_valid_path(path):
-        return all(vertices[i + 1] in graph[vertices[i]] for i in range(n - 1)) and vertices[-1] in graph[vertices[0]]
+        # Kiểm tra tất cả các cạnh có tồn tại và chu trình đóng
+        return all(path[i + 1] in adjacency_list[path[i]] for i in range(n - 1)) and path[-1] in adjacency_list[path[0]]
+    
     def backtrack(path):
-        if len(path) == n:
+        if len(path) == n:  # Nếu đi qua tất cả các đỉnh
             return is_valid_path(path)
         for v in vertices:
             if v not in path:
@@ -53,19 +56,23 @@ def has_hamilton_cycle(graph):
                     return True
                 path.pop()
         return False
+    
     return backtrack([vertices[0]])
 
-def find_hamilton_cycle(adjacency_list, start_vertex):
+def find_hamilton_cycle(adjacency_list, start):
     def backtrack(path):
-        if len(path) == len(adjacency_list) and path[0] in adjacency_list[path[-1]]:
-            return path
+        print(f"Đường đi Backtracking : {path}")
+        if len(path) == len(adjacency_list) and start in adjacency_list[path[-1]]:
+            print(f"Đường đi: {path + [start]}")
+            return path + [start]  # Thêm đỉnh quay về
         for next_vertex in adjacency_list[path[-1]]:
             if next_vertex not in path:
                 result = backtrack(path + [next_vertex])
                 if result:
                     return result
         return None
-    return backtrack([start_vertex])
+
+    return backtrack([start])
 
 def find_euler_path(graph, start):
     temp_graph, path, stack = deepcopy(graph), [], [start]
