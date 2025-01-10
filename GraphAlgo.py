@@ -1,7 +1,6 @@
+from copy import deepcopy
 import pandas as pd
 from collections import deque
-from copy import deepcopy
-import numpy as np
 import heapq
 def dfs(graph,frees, vertex, seq):
     seq.append(vertex)
@@ -39,41 +38,6 @@ def find_euler_cycle(graph):
             stack.append(neighbor)
     return cycle[::-1]
 
-def has_hamilton_cycle(adjacency_list):
-    vertices, n = list(adjacency_list.keys()), len(adjacency_list)
-    
-    def is_valid_path(path):
-        # Kiểm tra tất cả các cạnh có tồn tại và chu trình đóng
-        return all(path[i + 1] in adjacency_list[path[i]] for i in range(n - 1)) and path[-1] in adjacency_list[path[0]]
-    
-    def backtrack(path):
-        if len(path) == n:  # Nếu đi qua tất cả các đỉnh
-            return is_valid_path(path)
-        for v in vertices:
-            if v not in path:
-                path.append(v)
-                if backtrack(path):
-                    return True
-                path.pop()
-        return False
-    
-    return backtrack([vertices[0]])
-
-def find_hamilton_cycle(adjacency_list, start):
-    def backtrack(path):
-        print(f"Đường đi Backtracking : {path}")
-        if len(path) == len(adjacency_list) and start in adjacency_list[path[-1]]:
-            print(f"Đường đi: {path + [start]}")
-            return path + [start]  # Thêm đỉnh quay về
-        for next_vertex in adjacency_list[path[-1]]:
-            if next_vertex not in path:
-                result = backtrack(path + [next_vertex])
-                if result:
-                    return result
-        return None
-
-    return backtrack([start])
-
 def find_euler_path(graph, start):
     temp_graph, path, stack = deepcopy(graph), [], [start]
     while stack:
@@ -85,9 +49,6 @@ def find_euler_path(graph, start):
         else:
             path.append(stack.pop())
     return path[::-1]
-
-def is_valid_hamilton_cycle(cycle, graph):
-    return len(cycle) == len(graph) and len(set(cycle)) == len(graph) and all(cycle[i+1] in graph[cycle[i]] for i in range(len(cycle) - 1)) and cycle[0] in graph[cycle[-1]]
 
 def bfs(graph, start):
     visited, queue, traversal_order = set(), deque([start]), []
@@ -161,22 +122,74 @@ def kruskal(graph):
 
     return mst_edges, total_weight
 
-def graph_coloring(graph, colors):
-    n = len(graph)  
-    
-    for vertex in range(1, n):
-        # Track available colors
-        available = [True] * n
-        
-        
-        for neighbor in graph[vertex]:
-            if colors[neighbor] != -1:
-                available[colors[neighbor]] = False
-        
-        # Find first available color
-        for color in range(n):
-            if available[color]:
-                colors[vertex] = color
-                break
-                
-    return colors
+def dijkstra(shortest_path, start, end):
+    # Priority queue để lưu các điểm cần duyệt
+    priority_queue = []
+    heapq.heappush(priority_queue, (0, start))  # (distance, node)
+
+    # Khoảng cách ngắn nhất từ start đến từng đỉnh
+    distances = {key: float('inf') for key in shortest_path}
+    distances[start] = 0
+
+    # Để theo dõi đường đi
+    previous_nodes = {key: None for key in shortest_path}
+
+    while priority_queue:
+        current_distance, current_node = heapq.heappop(priority_queue)
+
+        # Nếu tìm thấy end, thoát vòng lặp
+        if current_node == end:
+            break
+
+        # Nếu khoảng cách hiện tại lớn hơn khoảng cách đã lưu, bỏ qua
+        if current_distance > distances[current_node]:
+            continue
+
+        # Duyệt tất cả các nút kề
+        for neighbor, weight in shortest_path[current_node]: # Unpack the neighbor and weight
+            distance = current_distance + weight  # Use the weight of the edge
+            if distance < distances[neighbor]:
+                distances[neighbor] = distance
+                previous_nodes[neighbor] = current_node
+                heapq.heappush(priority_queue, (distance, neighbor))
+
+    # Truy vết đường đi
+    path = []
+    current = end
+    while current is not None:
+        path.append(current)
+        current = previous_nodes[current]
+
+    path.reverse()  # Đảo ngược đường đi
+
+    # Trả về kết quả
+    return path, distances[end] if distances[end] != float('inf') else None
+
+def has_hamilton_cycle(graph):
+    vertices, n = list(graph.keys()), len(graph)
+    def is_valid_path(path):
+        return all(vertices[i + 1] in graph[vertices[i]] for i in range(n - 1)) and vertices[-1] in graph[vertices[0]]
+    def backtrack(path):
+        if len(path) == n:
+            return is_valid_path(path)
+        for v in vertices:
+            if v not in path:
+                path.append(v)
+                if backtrack(path):
+                    return True
+                path.pop()
+        return False
+    return backtrack([vertices[0]])
+
+def find_hamilton_cycle(adjacency_list, start_vertex):
+    def backtrack(path):
+        if len(path) == len(adjacency_list) and path[0] in adjacency_list[path[-1]]:
+            return path
+        for next_vertex in adjacency_list[path[-1]]:
+            if next_vertex not in path:
+                result = backtrack(path + [next_vertex])
+                if result:
+                    return result
+        return None
+
+    return backtrack([start_vertex])
