@@ -1,4 +1,8 @@
-# Graph-Theory-ArangoDB-Final
+# Graph-Theory-ArangoDB-Final 
+<a target="_blank" href="https://colab.research.google.com/github/ThienNguyen3001/Graph-Theory-ArangoDB-Final/blob/main/Code.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+
 ## Giới thiệu
 Đồ án kết thúc môn học môn Lý thuyết đồ thị, chủ đề là tìm hiểu và kết nối ArangoDB với Python
 ## Cách cài đặt/ sử dụng
